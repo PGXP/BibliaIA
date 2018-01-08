@@ -1,4 +1,4 @@
--- Baixar arquivo completo em  https://demoiselle.org/import.sql.zip
+-- Baixar arquivo completo em  https://www.demoiselle.org/import.sql.zip
 INSERT INTO VERSICULO (ID, POSICAO, TESTAMENTO, LIVRO, CAPITULO, VERSICULO, TEXTO, VERSAO, SENTIMENTO) VALUES ('1','1','Antigo Testamento','Genesis','1','1','No princípio criou Deus os céus e a terra.','Não Identificada','0.572969198226929')
 INSERT INTO VERSICULO (ID, POSICAO, TESTAMENTO, LIVRO, CAPITULO, VERSICULO, TEXTO, VERSAO, SENTIMENTO) VALUES ('2','1','Antigo Testamento','Genesis','1','2','A terra era sem forma e vazia; e havia trevas sobre a face do abismo, mas o Espírito de Deus pairava sobre a face das águas.','Não Identificada','0.38174232840538')
 INSERT INTO VERSICULO (ID, POSICAO, TESTAMENTO, LIVRO, CAPITULO, VERSICULO, TEXTO, VERSAO, SENTIMENTO) VALUES ('3','1','Antigo Testamento','Genesis','1','3','Disse Deus: haja luz. E houve luz.','Não Identificada','0.357513159513474')
