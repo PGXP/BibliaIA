@@ -92,6 +92,9 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
                 fts.setOrigem(versiculo.getTestamento());
                 fts.setNome(versiculo.getLivro().trim() + " - c " + versiculo.getCapitulo() + " v " + versiculo.getVersiculo() + " - " + versiculo.getVersao());
                 fts.setOcorrencias(score);
+                fts.setMsent(versiculo.getMsentimento());
+                fts.setGsent(versiculo.getGsentimento());
+                fts.setGmag(versiculo.getGmagnitude());
 
                 fts.setTexto(versiculo.getTexto());
 

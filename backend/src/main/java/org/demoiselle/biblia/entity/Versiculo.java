@@ -50,7 +50,9 @@ public class Versiculo implements Serializable {
     @Column(length = 128)
     private String versao;
 
-    private Double sentimento;
+    private Double msentimento;
+    private Double gsentimento;
+    private Double gmagnitude;
 
     public Integer getId() {
         return id;
@@ -116,12 +118,28 @@ public class Versiculo implements Serializable {
         this.versao = versao;
     }
 
-    public Double getSentimento() {
-        return sentimento;
+    public Double getMsentimento() {
+        return msentimento;
     }
 
-    public void setSentimento(Double sentimento) {
-        this.sentimento = sentimento;
+    public void setMsentimento(Double msentimento) {
+        this.msentimento = msentimento;
+    }
+
+    public Double getGsentimento() {
+        return gsentimento;
+    }
+
+    public void setGsentimento(Double gsentimento) {
+        this.gsentimento = gsentimento;
+    }
+
+    public Double getGmagnitude() {
+        return gmagnitude;
+    }
+
+    public void setGmagnitude(Double gmagnitude) {
+        this.gmagnitude = gmagnitude;
     }
 
     @Override

@@ -22,6 +22,10 @@ public class ResponseFTS implements Serializable {
     private float ocorrencias;
     private String texto;
 
+    private Double msent;
+    private Double gsent;
+    private Double gmag;
+
     /**
      *
      * @return
@@ -101,6 +105,31 @@ public class ResponseFTS implements Serializable {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    public Double getMsent() {
+        return msent;
+    }
+
+    public void setMsent(Double msent) {
+        this.msent = msent;
+    }
+
+    public Double getGsent() {
+        return gsent;
+    }
+
+    public void setGsent(Double gsent) {
+        this.gsent = gsent;
+    }
+
+    public Double getGmag() {
+        return gmag;
+    }
+
+    public void setGmag(Double gmag) {
+        this.gmag = gmag;
+    }
+
     private static final Logger LOG = Logger.getLogger(ResponseFTS.class.getName());
 
 }
