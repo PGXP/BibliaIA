@@ -12,7 +12,7 @@ public class VersiculoBC extends AbstractBusiness< Versiculo, Integer> {
 
     private static final Logger LOG = getLogger(VersiculoBC.class.getName());
 
-    public List<ResponseFTS> listarVersiculosFTS(String nome) {
+    public ResponseFTS listarVersiculosFTS(String nome) {
         return ((VersiculoDAO) dao).listarVersiculosFTS(nome);
     }
 
@@ -20,7 +20,4 @@ public class VersiculoBC extends AbstractBusiness< Versiculo, Integer> {
         ((VersiculoDAO) dao).reindex();
     }
 
-    public List<String> nomes(String nome) {
-        return ((VersiculoDAO) dao).nomes(nome);
-    }
 }

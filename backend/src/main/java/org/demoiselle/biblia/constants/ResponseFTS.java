@@ -6,7 +6,13 @@
 package org.demoiselle.biblia.constants;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import jdk.nashorn.internal.parser.Token;
 
 /**
  *
@@ -16,120 +22,34 @@ public class ResponseFTS implements Serializable {
 
     private static final long serialVersionUID = -1769589533175831560L;
 
-    private Integer idOrigem;
-    private String origem;
-    private String nome;
-    private float ocorrencias;
-    private String texto;
+    private List<ItemFTS> itens = new ArrayList<>();
+    private Map<String, String> persons = new HashMap<>();
+    private Map<String, String> categories = new HashMap<>();
 
-    private Double msent;
-    private Double gsent;
-    private Double gmag;
-
-    /**
-     *
-     * @return
-     */
-    public Integer getIdOrigem() {
-        return idOrigem;
+    public List<ItemFTS> getItens() {
+        return itens;
     }
 
-    /**
-     *
-     * @param idOrigem
-     */
-    public void setIdOrigem(Integer idOrigem) {
-        this.idOrigem = idOrigem;
+    public void setItens(List<ItemFTS> itens) {
+        this.itens = itens;
     }
 
-    /**
-     *
-     * @return
-     */
-    public String getOrigem() {
-        return origem;
+    public Map<String, String> getPersons() {
+        return persons;
     }
 
-    /**
-     *
-     * @param origem
-     */
-    public void setOrigem(String origem) {
-        this.origem = origem;
+    public void setPersons(Map<String, String> persons) {
+        this.persons = persons;
     }
 
-    /**
-     *
-     * @return
-     */
-    public float getOcorrencias() {
-        return ocorrencias;
+    public Map<String, String> getCategories() {
+        return categories;
     }
 
-    /**
-     *
-     * @param ocorrencias
-     */
-    public void setOcorrencias(float ocorrencias) {
-        this.ocorrencias = ocorrencias;
+    public void setCategories(Map<String, String> categories) {
+        this.categories = categories;
     }
 
-    /**
-     *
-     * @return
-     */
-    public String getTexto() {
-        return texto;
-    }
-
-    /**
-     *
-     * @param texto
-     */
-    public void setTexto(String texto) {
-        this.texto = texto;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getNome() {
-        return nome;
-    }
-
-    /**
-     *
-     * @param nome
-     */
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Double getMsent() {
-        return msent;
-    }
-
-    public void setMsent(Double msent) {
-        this.msent = msent;
-    }
-
-    public Double getGsent() {
-        return gsent;
-    }
-
-    public void setGsent(Double gsent) {
-        this.gsent = gsent;
-    }
-
-    public Double getGmag() {
-        return gmag;
-    }
-
-    public void setGmag(Double gmag) {
-        this.gmag = gmag;
-    }
-
-    private static final Logger LOG = Logger.getLogger(ResponseFTS.class.getName());
+    final Logger LOG = Logger.getLogger(ResponseFTS.class.getName());
 
 }

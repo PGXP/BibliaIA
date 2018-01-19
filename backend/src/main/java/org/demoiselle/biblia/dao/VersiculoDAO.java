@@ -1,34 +1,17 @@
 package org.demoiselle.biblia.dao;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
-import javax.net.ssl.HttpsURLConnection;
+import javax.inject.Inject;
 import org.demoiselle.biblia.entity.Versiculo;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.TokenNameFinderModel;
-import opennlp.tools.tokenize.SimpleTokenizer;
-import opennlp.tools.tokenize.Tokenizer;
-import opennlp.tools.util.Span;
-import org.apache.lucene.analysis.br.BrazilianAnalyzer;
 import org.apache.lucene.search.Sort;
+import org.demoiselle.biblia.constants.ItemFTS;
 import org.demoiselle.biblia.constants.ResponseFTS;
-import org.demoiselle.jee.core.lifecycle.annotation.Startup;
+import org.demoiselle.biblia.ia.nlp.NLPtools;
 import org.demoiselle.jee.crud.AbstractDAO;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -38,6 +21,9 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
 
     private static final Logger LOG = getLogger(VersiculoDAO.class.getName());
+
+    @Inject
+    private NLPtools nlp;
 
     @PersistenceContext(unitName = "bibliaPU")
     protected EntityManager em;
@@ -52,9 +38,9 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
      * @param nome
      * @return
      */
-    public List<ResponseFTS> listarVersiculosFTS(String nome) {
+    public ResponseFTS listarVersiculosFTS(String nome) {
+        ResponseFTS response = new ResponseFTS();
 
-        List<ResponseFTS> lista = new ArrayList<>();
         FullTextEntityManager fullTextEm = Search.getFullTextEntityManager(getEntityManager());
         QueryBuilder qb = fullTextEm.getSearchFactory()
                 .buildQueryBuilder()
@@ -82,60 +68,29 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
         FullTextQuery fullTextQuery = fullTextEm.createFullTextQuery(luceneQuery, Versiculo.class);
         fullTextQuery.setProjection(FullTextQuery.SCORE, FullTextQuery.THIS);
 
+        StringBuilder sb = new StringBuilder();
+
         fullTextQuery.setSort(Sort.RELEVANCE).getResultList().forEach((object) -> {
             try {
-                StringBuilder sb = new StringBuilder();
+
                 Float score = (Float) ((Object[]) object)[0];
                 Versiculo versiculo = (Versiculo) ((Object[]) object)[1];
-                ResponseFTS fts = new ResponseFTS();
-                fts.setIdOrigem(versiculo.getId());
-                fts.setOrigem(versiculo.getTestamento());
-                fts.setNome(versiculo.getLivro().trim() + " - c " + versiculo.getCapitulo() + " v " + versiculo.getVersiculo() + " - " + versiculo.getVersao());
+                ItemFTS fts = new ItemFTS();
+                fts.setVersiculo(versiculo);
                 fts.setOcorrencias(score);
-                fts.setMsent(versiculo.getMsentimento());
-                fts.setGsent(versiculo.getGsentimento());
-                fts.setGmag(versiculo.getGmagnitude());
+                sb.append(versiculo.getTexto()).append(" ");
 
-                fts.setTexto(versiculo.getTexto());
-
-                lista.add(fts);
+                response.getItens().add(fts);
             } catch (Exception ex) {
                 Logger.getLogger(VersiculoDAO.class.getName()).log(Level.SEVERE, null, ex);
-
             }
+
         });
-
-        return lista;
+        response.getPersons().putAll(nlp.persons(sb.toString()));
+        return response;
 
     }
 
-    public List<String> nomes(String nome) {
-        List<String> resultado = new ArrayList<>();
-
-        try {
-            List<Versiculo> lista = listAll();
-            // http://opennlp.sourceforge.net/models-1.5/en-ner-person.bin
-            // Aguardando a versão em pt-br
-            TokenNameFinderModel model = new TokenNameFinderModel(new File("/opt/es-ner-person.bin"));
-            NameFinderME finder = new NameFinderME(model);
-            Tokenizer tokenizer = SimpleTokenizer.INSTANCE;
-
-            for (Versiculo versiculo : lista) {
-                String[] tokens = tokenizer.tokenize(versiculo.getTexto());
-                Span[] nameSpans = finder.find(tokens);
-                if (nameSpans.length > 0 && (Arrays.toString(Span.spansToStrings(nameSpans, tokens)).contains(nome))) {
-                    resultado.add(Arrays.toString(Span.spansToStrings(nameSpans, tokens)) + " - " + versiculo.toString());
-                }
-
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(VersiculoDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return resultado;
-    }
-
-    @Startup
     public void reindex() {
         FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search
                 .getFullTextEntityManager(getEntityManager());
@@ -146,7 +101,7 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
         }
     }
 
-    private List<Versiculo> listAll() {
-        return getEntityManager().createQuery("From Versiculo", Versiculo.class).getResultList();
+    public List<Versiculo> listAll() {
+        return getEntityManager().createQuery("SELECT v FROM Versiculo v Order by v.id", Versiculo.class).getResultList();
     }
 }
