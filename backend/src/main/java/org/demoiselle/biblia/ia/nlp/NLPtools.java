@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.doccat.DocumentCategorizer;
 import opennlp.tools.doccat.DocumentCategorizerME;
@@ -42,10 +40,10 @@ public class NLPtools {
 
     public Map<String, String> persons(String texto) {
         Map<String, String> resultado = new HashMap<>();
-        try {
+
+        try (InputStream modelPerson = new FileInputStream(pasta + "pt-ner-amazonia.bin")) {
 
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelPerson = new FileInputStream(pasta + "pt-ner-amazonia.bin");
             TokenNameFinderModel model = new TokenNameFinderModel(modelPerson);
             NameFinderME finder = new NameFinderME(model);
             Span[] nameSpans = finder.find(tokens);
@@ -57,88 +55,86 @@ public class NLPtools {
                 }
                 resultado.put(nome, nameSpan.toString());
             }
-            modelPerson.close();
-            return resultado;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return resultado;
     }
 
     public Map<String, String> category(String texto) {
         Map<String, String> resultado = new HashMap<>();
-        try {
+
+        try (InputStream modelClassifier = new FileInputStream(pasta + "pt-livros-biblia-classifier-maxent.bin")) {
 
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelClassifier = new FileInputStream(pasta + "pt-livros-biblia-classifier-maxent.bin");
             DoccatModel model = new DoccatModel(modelClassifier);
             DocumentCategorizer doccat = new DocumentCategorizerME(model);
             double[] aProbs = doccat.categorize(tokens);
-
             resultado.put(doccat.getBestCategory(aProbs), "Livro sugerido");
 
-            modelClassifier.close();
-            return resultado;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return resultado;
     }
 
     public HashSet<String> tokenizer(String texto) {
         HashSet<String> resultado = new HashSet<>();
 
-        try {
-            InputStream modelToken = new FileInputStream(pasta + "pt-token.bin");
+        try (InputStream modelToken = new FileInputStream(pasta + "pt-token.bin")) {
+
             TokenizerModel model = new TokenizerModel(modelToken);
             TokenizerME tokenizer = new TokenizerME(model);
             String token[] = tokenizer.tokenize(texto);
             resultado.addAll(Arrays.asList(token));
-            modelToken.close();
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return resultado;
 
+        return resultado;
     }
 
     public HashSet<String> sentenceDetect(String text) {
         HashSet<String> resultado = new HashSet<>();
-        try {
 
-            InputStream modelSentence = new FileInputStream(pasta + "pt-sent.bin");
+        try (InputStream modelSentence = new FileInputStream(pasta + "pt-sent.bin")) {
+
             SentenceModel model = new SentenceModel(modelSentence);
             SentenceDetectorME sdetector = new SentenceDetectorME(model);
             String sentences[] = sdetector.sentDetect(text);
             resultado.addAll(Arrays.asList(sentences));
-            modelSentence.close();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return resultado;
     }
 
     public Map<String, String> POSTaggerMaxent(String texto) {
         Map<String, String> resultado = new HashMap<>();
 
-        try {
+        try (InputStream modelPOSmaxent = new FileInputStream(pasta + "pt-pos-maxent.bin")) {
 
-            InputStream modelPOSmaxent = new FileInputStream(pasta + "pt-pos-maxent.bin");
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
             POSModel posModel = new POSModel(modelPOSmaxent);
             POSTaggerME posTagger = new POSTaggerME(posModel);
             String tags[] = posTagger.tag(tokens);
-            modelPOSmaxent.close();
 
             for (int i = 0; i < tokens.length; i++) {
                 resultado.put(tokens[i], tags[i]);
             }
-
         } catch (IOException e) {
             Logger.getLogger(NLPtools.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -149,13 +145,12 @@ public class NLPtools {
     public Map<String, String> POSTaggerPerceptron(String texto) {
         Map<String, String> resultado = new HashMap<>();
 
-        try {
+        try (InputStream modelPOSperceptron = new FileInputStream(pasta + "pt-pos-perceptron.bin")) {
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelPOSperceptron = new FileInputStream(pasta + "pt-pos-perceptron.bin");
             POSModel posModel = new POSModel(modelPOSperceptron);
             POSTaggerME posTagger = new POSTaggerME(posModel);
             String tags[] = posTagger.tag(tokens);
-            modelPOSperceptron.close();
+
             for (int i = 0; i < tokens.length; i++) {
                 resultado.put(tokens[i], tags[i]);
             }
