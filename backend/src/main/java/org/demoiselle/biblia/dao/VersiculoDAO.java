@@ -87,6 +87,7 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
 
         });
         response.getPersons().putAll(nlp.persons(sb.toString()));
+        response.getCategories().putAll(nlp.category(nome));
         return response;
 
     }
@@ -102,6 +103,7 @@ public class VersiculoDAO extends AbstractDAO< Versiculo, Integer> {
     }
 
     public List<Versiculo> listAll() {
-        return getEntityManager().createQuery("SELECT v FROM Versiculo v Order by v.id", Versiculo.class).getResultList();
+        return getEntityManager().createQuery("SELECT v FROM Versiculo v ORDER BY v.id", Versiculo.class).getResultList();
     }
+
 }

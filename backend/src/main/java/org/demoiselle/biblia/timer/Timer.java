@@ -1,6 +1,9 @@
 package org.demoiselle.biblia.timer;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import javax.ejb.Schedule;

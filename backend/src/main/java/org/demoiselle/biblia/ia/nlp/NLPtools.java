@@ -32,18 +32,20 @@ import opennlp.tools.util.Span;
 
 /**
  *
- * @author 70744416353
+ * @author PauloGladson
  */
+// http://www.linguateca.pt/Floresta/material.html
 // baixar arquivo em http://opennlp.sourceforge.net/models-1.5/
-// baixar arquivo em https://github.com/kinow/opennlp-dmclatam/blob/master/src/main/resources/models/pt-ner-person.bin
 public class NLPtools {
+
+    private String pasta = "e:\\dados\\demoiselle\\";
 
     public Map<String, String> persons(String texto) {
         Map<String, String> resultado = new HashMap<>();
         try {
 
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelPerson = new FileInputStream("/opt/demoiselle/pt-ner-person.bin");
+            InputStream modelPerson = new FileInputStream(pasta + "pt-ner-amazonia.bin");
             TokenNameFinderModel model = new TokenNameFinderModel(modelPerson);
             NameFinderME finder = new NameFinderME(model);
             Span[] nameSpans = finder.find(tokens);
@@ -68,14 +70,12 @@ public class NLPtools {
         try {
 
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelClassifier = new FileInputStream("/opt/demoiselle/pt-classifier-maxent.bin");
+            InputStream modelClassifier = new FileInputStream(pasta + "pt-livros-biblia-classifier-maxent.bin");
             DoccatModel model = new DoccatModel(modelClassifier);
             DocumentCategorizer doccat = new DocumentCategorizerME(model);
             double[] aProbs = doccat.categorize(tokens);
 
-            for (int i = 0; i < doccat.getNumberOfCategories(); i++) {
-                resultado.put(doccat.getCategory(i), "" + aProbs[i]);
-            }
+            resultado.put(doccat.getBestCategory(aProbs), "Livro sugerido");
 
             modelClassifier.close();
             return resultado;
@@ -89,7 +89,7 @@ public class NLPtools {
         HashSet<String> resultado = new HashSet<>();
 
         try {
-            InputStream modelToken = new FileInputStream("/opt/demoiselle/pt-token.bin");
+            InputStream modelToken = new FileInputStream(pasta + "pt-token.bin");
             TokenizerModel model = new TokenizerModel(modelToken);
             TokenizerME tokenizer = new TokenizerME(model);
             String token[] = tokenizer.tokenize(texto);
@@ -108,7 +108,7 @@ public class NLPtools {
         HashSet<String> resultado = new HashSet<>();
         try {
 
-            InputStream modelSentence = new FileInputStream("/opt/demoiselle/pt-sent.bin");
+            InputStream modelSentence = new FileInputStream(pasta + "pt-sent.bin");
             SentenceModel model = new SentenceModel(modelSentence);
             SentenceDetectorME sdetector = new SentenceDetectorME(model);
             String sentences[] = sdetector.sentDetect(text);
@@ -128,7 +128,7 @@ public class NLPtools {
 
         try {
 
-            InputStream modelPOSmaxent = new FileInputStream("/opt/demoiselle/pt-pos-maxent.bin");
+            InputStream modelPOSmaxent = new FileInputStream(pasta + "pt-pos-maxent.bin");
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
             POSModel posModel = new POSModel(modelPOSmaxent);
             POSTaggerME posTagger = new POSTaggerME(posModel);
@@ -151,7 +151,7 @@ public class NLPtools {
 
         try {
             String tokens[] = tokenizer(texto).toArray(new String[tokenizer(texto).size()]);
-            InputStream modelPOSperceptron = new FileInputStream("/opt/demoiselle/pt-pos-perceptron.bin");
+            InputStream modelPOSperceptron = new FileInputStream(pasta + "pt-pos-perceptron.bin");
             POSModel posModel = new POSModel(modelPOSperceptron);
             POSTaggerME posTagger = new POSTaggerME(posModel);
             String tags[] = posTagger.tag(tokens);
